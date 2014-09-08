@@ -1,0 +1,220 @@
+<?php
+/*
+Author: 2MB Solutions
+Author URI: http://2mb.solutions/
+Description: This plugin allows you to place predetermined text, php, or shortcodes at the top and/or bottom of posts.
+Plugin Name: 2MB Autocode
+Plugin URI: http://2mb.solutions/autocode
+Version: 1.0
+License: Gpl v2 or later
+*/
+
+
+add_filter('the_content', 'twomb_autocode_modify_content', 9999);
+
+function twomb_autocode_modify_content($content) {
+    $count = 0;
+    $content = str_replace('##no_top##', '', $content, $count);
+    $count2 = 0;
+    $content = str_replace('##no_bottom##', '', $content, $count2);
+    if((is_single() || get_option('2mb_autocode_tophome') == 1) && $count == 0) {
+        if(get_option('2mb_autocode_toptype') == 1) {
+            $content = do_shortcode(exec(get_option('2mb_autocode_topstring'))).$content;
+        }
+        else if(get_option('2mb_autocode_toptype') == 2) {
+            $content = '<pre>'.get_option('2mb_autocode_topstring').'</pre>'.$content;
+        }
+        else {
+            $content = do_shortcode(get_option('2mb_autocode_topstring')).$content;
+        }
+    }
+    if((is_single() || get_option('2mb_autocode_bottomhome') == 1) && $count2 == 0) {
+        if(get_option('2mb_autocode_bottomtype') == 1) {
+            $content = $content.do_shortcode(exec(get_option('2mb_autocode_bottomstring')));
+        }
+        else if(get_option('2mb_autocode_bottomtype') == 2) {
+            $content = $content.'<pre>'.get_option('2mb_autocode_bottomstring').'</pre>';
+        }
+        else {
+            $content = $content.do_shortcode(get_option('2mb_autocode_bottomstring'));
+        }
+    }
+    return $content;
+}
+
+add_action('admin_menu', 'twomb_autocode_init_admin_menu');
+
+function twomb_autocode_init_admin_menu() {
+    add_options_page('Autocode Options', 'Autocode', 'manage_options', 'twomb-autocode-settings', 'twomb_autocode_options');
+}
+
+function twomb_autocode_options() {
+    if(!current_user_can( 'manage_options')) {
+        wp_die( 'You do not have rights to access this page.');
+    }
+    ?>
+    <h2>Wait just a second.</h2>
+    <p>
+    Do you like this plugin? Does it make your life just a little bit easier -- we hope! If it does, please consider donating to help our plugin effort along. Any amount helps. We'll love you forever ;-)
+    <br>
+    <form name="input" target="_blank" action="https://www.paypal.com/cgi-bin/webscr" method="post">
+    <input type="hidden" name="add" value="1">
+    <input type="hidden" name="cmd" value="_xclick">
+    <input type="hidden" name="business" value="ai5hf@hotmail.com">
+    <input type="hidden" name="item_name" value="Support 2MB Solutions">
+    Amount: $<input type="text" maxlength="200" style="width:50px;" name="amount" value="5.00"> USD<br />
+    <input type="hidden" name="currency_code" value="USD">
+    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" alt="PayPal - The safer, easier way to pay online!">
+    </form>
+    <br>
+    Also please consider visiting our website to stay up to date on 2MB Solutions news, plugins, offers, and more. <a href="http://2mb.solutions/">Click here to visit</a>.
+    </p>
+    <div class="wrap">
+    <form action="options.php" method="post">
+    <?php
+    settings_fields('twomb-autocode-settings');
+    do_settings_sections('twomb-autocode-settings');
+    submit_button();
+    ?>
+    </form>
+    </div>
+    <?php
+}
+
+add_action('admin_init', 'twomb_autocode_init_settings');
+
+function twomb_autocode_init_settings() {
+    add_settings_section('twomb-autocode-settings', 'Autocode Options', 'twomb_autocode_print_section', 'twomb-autocode-settings');
+    register_setting('twomb-autocode-settings', '2mb_autocode_topstring', 'twomb_autocode_topstring_sanitize');
+    register_setting('twomb-autocode-settings', '2mb_autocode_toptype', 'twomb_autocode_toptype_sanitize');
+    register_setting('twomb-autocode-settings', '2mb_autocode_bottomstring', 'twomb_autocode_bottomstring_sanitize');
+    register_setting('twomb-autocode-settings', '2mb_autocode_bottomtype', 'twomb_autocode_bottomtype_sanitize');
+    register_setting('twomb-autocode-settings', '2mb_autocode_tophome', 'twomb_autocode_tophome_sanitize');
+    register_setting('twomb-autocode-settings', '2mb_autocode_bottomhome', 'twomb_autocode_bottomhome_sanitize');
+    add_settings_field('2mb-autocode-topstring', 'Text to place at the top of posts/pages', 'twomb_autocode_topstring_print', 'twomb-autocode-settings', 'twomb-autocode-settings');
+    add_settings_field('2mb-autocode-toptype', 'What type of text is this?', 'twomb_autocode_toptype_print', 'twomb-autocode-settings', 'twomb-autocode-settings');
+    add_settings_field('2mb-autocode-tophome', 'Should this be displayed at the top of each post on the homepage?', 'twomb_autocode_tophome_print', 'twomb-autocode-settings', 'twomb-autocode-settings');
+    add_settings_field('2mb-autocode-bottomstring', 'Text to place at the bottom of posts/pages', 'twomb_autocode_bottomstring_print', 'twomb-autocode-settings', 'twomb-autocode-settings');
+    add_settings_field('2mb-autocode-bottomtype', 'What type of text is this?', 'twomb_autocode_bottomtype_print', 'twomb-autocode-settings', 'twomb-autocode-settings');
+    add_settings_field('2mb-autocode-bottomhome', 'Should this text be displayed at the bottom of each post on the homepage?', 'twomb_autocode_bottomhome_print', 'twomb-autocode-settings', 'twomb-autocode-settings');
+}
+
+
+function twomb_autocode_topstring_sanitize($data) {
+    return wp_kses_post($data);
+}
+
+function twomb_autocode_toptype_sanitize($data) {
+    if((int)$data < 0 || (int)$data > 2) {
+        return 0;
+    }
+    else {
+        return (int)$data;
+    }
+}
+
+function twomb_autocode_tophome_sanitize($data) {
+    if($data == NULL) {
+        return 0;
+    }
+    else {
+        if($data == 'true') {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+}
+
+function twomb_autocode_bottomtype_sanitize($data) {
+    if((int)$data < 0 || (int)$data > 2) {
+        return 0;
+    }
+    else {
+        return (int)$data;
+    }
+}
+
+function twomb_autocode_bottomstring_sanitize($data) {
+    return wp_kses_post($data);
+}
+
+function twomb_autocode_bottomhome_sanitize($data) {
+    if($data == NULL) {
+        return 0;
+    }
+    else {
+        if($data == 'true') {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+}
+
+function twomb_autocode_topstring_print() {
+    ?>
+    <textarea id="2mb_autocode_topstring" name="2mb_autocode_topstring"><?php echo(get_option('2mb_autocode_topstring'));?></textarea>
+    <?php
+}
+
+function twomb_autocode_toptype_print() {
+    ?>
+    <input type="radio" name="2mb_autocode_toptype" id="2mb_autocode_toptype" value="0" <?php echo((get_option('2mb_autocode_toptype') == 0)?'checked="checked"':'');?>> Html
+    <input type="radio" name="2mb_autocode_toptype" id="2mb_autocode_toptype" value="1" <?php echo((get_option('2mb_autocode_toptype') == 1)?'checked="checked"':'');?>> php
+    <input type="radio" name="2mb_autocode_toptype" id="2mb_autocode_toptype" value="2" <?php echo((get_option('2mb_autocode_toptype') == 2)?'checked="checked"':'');?>> Preformatted text
+    <br>
+    Note: When using php, you must echo any required output, and not include any php tags. Also, when using preformatted text, shortcodes will not work.
+    <?php
+}
+
+function twomb_autocode_tophome_print() {
+    ?>
+    <input type="checkbox" name="2mb_autocode_tophome" id="2mb_autocode_tophome" value="true" <?php echo((get_option('2mb_autocode_tophome') == 1)?'checked="checked"':'');?>> Yes
+    <?php
+}
+
+function twomb_autocode_bottomstring_print() {
+    ?>
+    <textarea id="2mb_autocode_bottomstring" name="2mb_autocode_bottomstring"><?php echo(get_option('2mb_autocode_bottomstring'));?></textarea>
+    <?php
+}
+
+function twomb_autocode_bottomtype_print() {
+    ?>
+    <input type="radio" name="2mb_autocode_bottomtype" id="2mb_autocode_bottomtype" value="0" <?php echo((get_option('2mb_autocode_bottomtype') == 0)?'checked="checked"':'');?>> Html
+    <input type="radio" name="2mb_autocode_bottomtype" id="2mb_autocode_bottomtype" value="1" <?php echo((get_option('2mb_autocode_bottomtype') == 1)?'checked="checked"':'');?>> php
+    <input type="radio" name="2mb_autocode_bottomtype" id="2mb_autocode_bottomtype" value="2" <?php echo((get_option('2mb_autocode_bottomtype') == 2)?'checked="checked"':'');?>> Preformatted text
+    <br>
+    Note: When using php, you must echo any required output, and not include any php tags. Also, when using preformatted text, shortcodes will not work.
+    <?php
+}
+
+function twomb_autocode_bottomhome_print() {
+    ?>
+    <input type="checkbox" name="2mb_autocode_bottomhome" id="2mb_autocode_bottomhome" value="true" <?php echo((get_option('2mb_autocode_bottomhome') == 1)?'checked="checked"':'');?>> Yes
+    <?php
+}
+
+register_activation_hook(__FILE__, 'twomb_autocode_activate');
+
+function twomb_autocode_activate() {
+    add_option('2mb_autocode_bottomstring', '');
+    add_option('2mb_autocode_topstring', '');
+    add_option('2mb_autocode_toptype', 0);
+    add_option('2mb_autocode_bottomtype', 0);
+    add_option('2mb_autocode_tophome', 0);
+    add_option('2mb_autocode_bottomhome', 0);
+}
+
+function twomb_autocode_print_section() {
+    ?>
+    <p>
+    Enter your settings below, then click save to save your changes.
+    </p>
+    <?php
+}
+
+?>
