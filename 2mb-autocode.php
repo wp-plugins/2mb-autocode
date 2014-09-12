@@ -5,7 +5,7 @@ Author URI: http://2mb.solutions/
 Description: This plugin allows you to place predetermined text, php, or shortcodes at the top and/or bottom of posts.
 Plugin Name: 2MB Autocode
 Plugin URI: http://2mb.solutions/plugins/autocode
-Version: 1.1.1
+Version: 1.1.2
 License: Gpl v2 or later
 */
 
@@ -114,13 +114,13 @@ function twomb_autocode_modify_content($content) {
     return $content;
 }
 
-add_action('the_content', 'do_php', 0);
-function do_php($content) {
-    $content = preg_replace_callback('/\[php\]((.|\n)+)\[\/php\]/', 'exec_php', $content);
+add_action('the_content', 'twomb_autocode_do_php', 0);
+function twomb_autocode_do_php($content) {
+    $content = preg_replace_callback('/\[php\]((.|\n)+)\[\/php\]/', 'twomb_autocode_exec_php', $content);
     return $content;
 }
 
-function exec_php($matches) {
+function twomb_autocode_exec_php($matches) {
     ob_start();
     eval($matches[1]);
     $output = ob_get_contents();
