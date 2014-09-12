@@ -69,14 +69,20 @@ No screen shots at the moment. Sorry!
 *Very important! If you were using inline php to put php on your blog before, please upgrade to this version or uninstall inline php before upgrading to 2mb autocode 1.1. There was a problem that caused the two plugins to conflict, which has now been solved. *** NOTE *** if your blog is not accessible due to the conflict, do the following: Delete the inline php folder from your server, and all should be well. We're sorry for any inconvenience -- sometimes even plugin developers can screw up ;-).
 
 = 1.1.1 =
+
 *Added documentation to the plugin itself.
+
 *Added ##do_top_home## and ##do_bottom_home## to put text on the top or bottom of a post on the homepage even if the checkbox in settings is unchecked.
 
 = 1.1 =
 *Added ##do_top## and  ##do_bottom## to place the bottom or top text anywhere in a post.
+
 *Added ##no_top_home##, ##no_bottom_home##, ##no_top_post##, and ##no_bottom_post## to override the placing of text specifically on the home or post pages.
+
 *Added [php] PHP CODE HERE [/php] to run php inside a post.
+
 *Very important! Fixed an issue where php at the top or bottom of posts would not run, and could possibly crash programs or make them not work correctly.
+
 *Fixed a possible bug where php code in the top or bottom of the post may have been echoing to the wrong part of the screen.
 
 = 1.0 =
@@ -88,7 +94,9 @@ No screen shots at the moment. Sorry!
 If you use inline php to do your php inside posts:
 
 *You don't need to anymore, as this plugin will handle it for you.
+
 *Please update to this version or uninstall the inline php plugin because the two plugins conflict. This has now been fixed.
+
 *If your blog is totally broken and you cannot access the admin panel to remove the plugin inline php, then simply delete the inline php plugin folder from your server, and the problem will be solved. Sorry for any inconvenience (even coding ninjas are durps sometimes too, ;-))
 
 = 1.1.1 =
