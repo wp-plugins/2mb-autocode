@@ -4,8 +4,8 @@ Author: 2MB Solutions
 Author URI: http://2mb.solutions/
 Description: This plugin allows you to place predetermined text, php, or shortcodes at the top and/or bottom of posts.
 Plugin Name: 2MB Autocode
-Plugin URI: http://2mb.solutions/autocode
-Version: 1.0
+Plugin URI: http://2mb.solutions/plugins/autocode
+Version: 1.1
 License: Gpl v2 or later
 */
 
@@ -17,7 +17,61 @@ function twomb_autocode_modify_content($content) {
     $content = str_replace('##no_top##', '', $content, $count);
     $count2 = 0;
     $content = str_replace('##no_bottom##', '', $content, $count2);
-    if((is_single() || get_option('2mb_autocode_tophome') == 1) && $count == 0) {
+    $count3 = 0;
+    $content = str_replace('##no_top_home##', '', $content, $count3);
+    $count4 = 0;
+    $content = str_replace('##no_bottom_home##', '', $content, $count4);
+    $count5 = 0;
+    $content = str_replace('##no_top_post##', '', $content, $count5);
+    $count6 = 0;
+    $content = str_replace('##no_bottom_post##', '', $content, $count6);
+    $count7 = 0;
+    if(get_option('2mb_autocode_toptype') == 0) {
+        $content = str_replace('##do_top##', do_shortcode(get_option('2mb_autocode_topstring')), $content, $count7);
+    }
+    else if(get_option('2mb_autocode_toptype') == 1) {
+        $content = str_replace('##do_top##', do_shortcode(exec(get_option('2mb_autocode_topstring'))), $content, $count7);
+    }
+    else {
+        $content = str_replace('##do_top##', '<pre>'.get_option('2mb_autocode_topstring').'</pre>', $content, $count7);
+    }
+    $count8 = 0;
+    if(get_option('2mb_autocode_bottomtype') == 0) {
+        $content = str_replace('##do_bottom##', do_shortcode(get_option('2mb_autocode_bottomstring')), $content, $count8);
+    }
+    else if(get_option('2mb_autocode_bottomtype') == 1) {
+        $content = str_replace('##do_bottom##', do_shortcode(exec(get_option('2mb_autocode_bottomstring'))), $content, $count8);
+    }
+    else {
+        $content = str_replace('##do_bottom##', '<pre>'.get_option('2mb_autocode_bottomstring').'</pre>', $content, $count8);
+    }
+    $top = 1;
+    $bottom = 1;
+    if($count > 0) {
+        $top = 0;
+    }
+    if($count3 > 0 && !is_single()) {
+        $top = 0;
+    }
+    if($count5 > 0 && is_single()){
+        $top = 0;
+    }
+    if($count2 > 0) {
+        $bottom = 0;
+    }
+    if($count4 > 0 && !is_single()) {
+        $bottom = 0;
+    }
+    if($count6 > 0 && is_single()){
+        $bottom = 0;
+    }
+    if($count7 > 0) {
+        $top = 0;
+    }
+    if($count8 > 0) {
+        $bottom = 0;
+    }
+    if($top == 1) {
         if(get_option('2mb_autocode_toptype') == 1) {
             $content = do_shortcode(exec(get_option('2mb_autocode_topstring'))).$content;
         }
@@ -28,7 +82,7 @@ function twomb_autocode_modify_content($content) {
             $content = do_shortcode(get_option('2mb_autocode_topstring')).$content;
         }
     }
-    if((is_single() || get_option('2mb_autocode_bottomhome') == 1) && $count2 == 0) {
+    if($bottom == 1) {
         if(get_option('2mb_autocode_bottomtype') == 1) {
             $content = $content.do_shortcode(exec(get_option('2mb_autocode_bottomstring')));
         }
