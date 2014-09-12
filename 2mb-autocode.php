@@ -5,7 +5,7 @@ Author URI: http://2mb.solutions/
 Description: This plugin allows you to place predetermined text, php, or shortcodes at the top and/or bottom of posts.
 Plugin Name: 2MB Autocode
 Plugin URI: http://2mb.solutions/plugins/autocode
-Version: 1.1
+Version: 1.1.1
 License: Gpl v2 or later
 */
 
@@ -45,6 +45,10 @@ function twomb_autocode_modify_content($content) {
     else {
         $content = str_replace('##do_bottom##', '<pre>'.get_option('2mb_autocode_bottomstring').'</pre>', $content, $count8);
     }
+    $count9 = 0;
+    $content = str_replace('##do_top_home##', '', $content, $count9);
+    $count10 = 0;
+    $content  = str_replace('##do_bottom_home##', '', $content, $count10);
     $top = 1;
     $bottom = 1;
     if($count > 0) {
@@ -70,6 +74,12 @@ function twomb_autocode_modify_content($content) {
     }
     if($count8 > 0) {
         $bottom = 0;
+    }
+    if($count9 > 0 && !is_single()) {
+        $top = 1;
+    }
+    if($count10  > 0 && !is_single()) {
+        $bottom = 1;
     }
     if($top == 1) {
         if(get_option('2mb_autocode_toptype') == 1) {
@@ -129,6 +139,7 @@ function twomb_autocode_options() {
         wp_die( 'You do not have rights to access this page.');
     }
     ?>
+    <div class="wrap">
     <h2>Wait just a second.</h2>
     <p>
     Do you like this plugin? Does it make your life just a little bit easier -- we hope! If it does, please consider donating to help our plugin effort along. Any amount helps. We'll love you forever ;-)
@@ -145,14 +156,26 @@ function twomb_autocode_options() {
     <br>
     Also please consider visiting our website to stay up to date on 2MB Solutions news, plugins, offers, and more. <a href="http://2mb.solutions/">Click here to visit</a>.
     </p>
-    <div class="wrap">
-    <form action="options.php" method="post">
+<form method="post" action="options.php">
     <?php
     settings_fields('twomb-autocode-settings');
     do_settings_sections('twomb-autocode-settings');
     submit_button();
     ?>
     </form>
+    <h2>Documentation</h2>
+    <p>
+    This plugin is rather simple, but to make it as easy as possible to use this plugin, we will include some documentation here:
+    <br>
+    <ul>
+    <li>To stop the text from displaying at the top or bottom of a post and the homepage, enter ##no_top## for the top text or ##no_bottom## for the bottom text anywhere in the post.</li>
+    <li>To stop the text from displaying selectively on the homepage *or* the post page, enter ##no_top_home## or ##no_bottom_home## for the homepage, or ##no_top_post## or ##no_bottom_post## for the post page.</li>
+    <li>To enable the top and/or bottom text when it is normally not enabled on the homepage, add ##do_top_home## or ##do_bottom_home## to anywhere on the post.</li>
+    <li>To include php code to run in a page, enter [php]CODE HERE[/php] anywhere in the post. Note: You should not include the beginning opening or end closing php tag, but you may exit php and re-enter by using a closing then opening tag.</li>
+    </ul>
+    <br>
+    Remember, feedback is most welcome! <a href="http://2mb.solutions/">Visit our homepage to suggest a feature, a new plugin, and more</a>.
+    </p>
     </div>
     <?php
 }

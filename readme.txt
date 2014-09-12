@@ -4,7 +4,7 @@ Donate link: http://2mb.solutions/donate
 Tags: autocode, code placement, automatic, php, html, preformatted text, top, bottom, modify posts
 Requires at least: 2.7.0
 Tested up to: 4.0
-Stable tag: 1.1
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,7 +33,7 @@ Feel free to mess around with the settings under settings > Autocode.
 
 = How do I remove the text from a specific post! HELP! =
 
-Simply put ##no_top## or ##no_bottom## anywhere in the post, and it will remove those tags, and not put the text on bottom or top depending on which tag(s) you entered.
+Simply put ##no_top## or ##no_bottom## anywhere in the post, and it will remove those tags, and not put the text on bottom or top depending on which tag(s) you entered. In addition, if you put ##no_top_home##, ##no_bottom_home##, ##no_top_post##, or ##no_bottom_post##, it will remove the text from either the top or bottom of either the post page or the homepage, no matter what is set in the settings.
 
 = How do I suggest a feature or new plugin? =
 
@@ -47,11 +47,19 @@ For example, to echo hello world in the middle of a post, do the following:
 
 [php] echo("hello world!");[/php]
 
+= How do I make the text go on the homepage without setting the checkbox! =
+
+Simply put  ##do_top_home## or ##do_bottom_home## anywhere in the post.
+
 == Screenshots ==
 
 No screen shots at the moment. Sorry!
 
 == Changelog ==
+
+= 1.1.1 =
+*Added documentation to the plugin itself.
+*Added ##do_top_home## and ##do_bottom_home## to put text on the top or bottom of a post on the homepage even if the checkbox in settings is unchecked.
 
 = 1.1 =
 *Added ##do_top## and  ##do_bottom## to place the bottom or top text anywhere in a post.
