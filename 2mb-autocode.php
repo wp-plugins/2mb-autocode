@@ -50,7 +50,7 @@ function twomb_autocode_modify_content($content) {
     if($count > 0) {
         $top = 0;
     }
-    if($count3 > 0 && !is_single()) {
+    if(($count3 > 0 && !is_single()) || get_option('2mb_autocode_tophome') == 0) {
         $top = 0;
     }
     if($count5 > 0 && is_single()){
@@ -59,7 +59,7 @@ function twomb_autocode_modify_content($content) {
     if($count2 > 0) {
         $bottom = 0;
     }
-    if($count4 > 0 && !is_single()) {
+    if(($count4 > 0 && !is_single()) || get_option('2mb_autocode_tophome') == 0) {
         $bottom = 0;
     }
     if($count6 > 0 && is_single()){
@@ -73,7 +73,11 @@ function twomb_autocode_modify_content($content) {
     }
     if($top == 1) {
         if(get_option('2mb_autocode_toptype') == 1) {
-            $content = do_shortcode(exec(get_option('2mb_autocode_topstring'))).$content;
+            ob_start();
+            eval(get_option('2mb_autocode_topstring'));
+            $string = ob_get_contents();
+            ob_end_clean();
+            $content = do_shortcode($string).$content;
         }
         else if(get_option('2mb_autocode_toptype') == 2) {
             $content = '<pre>'.get_option('2mb_autocode_topstring').'</pre>'.$content;
@@ -84,7 +88,11 @@ function twomb_autocode_modify_content($content) {
     }
     if($bottom == 1) {
         if(get_option('2mb_autocode_bottomtype') == 1) {
-            $content = $content.do_shortcode(exec(get_option('2mb_autocode_bottomstring')));
+            ob_start();
+            eval(get_option('2mb_autocode_bottomstring'));
+            $string = ob_get_contents();
+            ob_end_clean();
+            $content = $content.do_shortcode($string);
         }
         else if(get_option('2mb_autocode_bottomtype') == 2) {
             $content = $content.'<pre>'.get_option('2mb_autocode_bottomstring').'</pre>';
@@ -94,6 +102,20 @@ function twomb_autocode_modify_content($content) {
         }
     }
     return $content;
+}
+
+add_action('the_content', 'do_php', 0);
+function do_php($content) {
+    $content = preg_replace_callback('/\[php\]((.|\n)+)\[\/php\]/', 'exec_php', $content);
+    return $content;
+}
+
+function exec_php($matches) {
+    ob_start();
+    eval($matches[1]);
+    $output = ob_get_contents();
+    ob_end_clean();
+    return $output;
 }
 
 add_action('admin_menu', 'twomb_autocode_init_admin_menu');
