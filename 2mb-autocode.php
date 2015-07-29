@@ -5,13 +5,12 @@ Author URI: http://2mb.solutions/
 Description: This plugin allows you to place predetermined text, php, or shortcodes at the top and/or bottom of posts.
 Plugin Name: 2MB Autocode
 Plugin URI: http://2mb.solutions/plugins/autocode
-Version: 1.1.2
+Version: 1.2
 License: Gpl v2 or later
 */
 
 
 add_filter('the_content', 'twomb_autocode_modify_content', 9999);
-
 function twomb_autocode_modify_content($content) {
     $count = 0;
     $content = str_replace('##no_top##', '', $content, $count);
@@ -30,7 +29,11 @@ function twomb_autocode_modify_content($content) {
         $content = str_replace('##do_top##', do_shortcode(get_option('2mb_autocode_topstring')), $content, $count7);
     }
     else if(get_option('2mb_autocode_toptype') == 1) {
-        $content = str_replace('##do_top##', do_shortcode(exec(get_option('2mb_autocode_topstring'))), $content, $count7);
+                ob_start();
+                eval(get_option('2mb_autocode_topstring'));
+                $topstring = ob_get_contents();
+                ob_end_clean();
+        $content = str_replace('##do_top##', do_shortcode($topstring), $content, $count7);
     }
     else {
         $content = str_replace('##do_top##', '<pre>'.get_option('2mb_autocode_topstring').'</pre>', $content, $count7);
@@ -40,7 +43,11 @@ function twomb_autocode_modify_content($content) {
         $content = str_replace('##do_bottom##', do_shortcode(get_option('2mb_autocode_bottomstring')), $content, $count8);
     }
     else if(get_option('2mb_autocode_bottomtype') == 1) {
-        $content = str_replace('##do_bottom##', do_shortcode(exec(get_option('2mb_autocode_bottomstring'))), $content, $count8);
+                ob_start();
+                eval(get_option('2mb_autocode_bottomstring'));
+                $bottomstring = ob_get_contents();
+                ob_end_clean();
+        $content = str_replace('##do_bottom##', do_shortcode($bottomstring), $content, $count8);
     }
     else {
         $content = str_replace('##do_bottom##', '<pre>'.get_option('2mb_autocode_bottomstring').'</pre>', $content, $count8);
@@ -54,7 +61,7 @@ function twomb_autocode_modify_content($content) {
     if($count > 0) {
         $top = 0;
     }
-    if(($count3 > 0 && !is_single()) || get_option('2mb_autocode_tophome') == 0) {
+    if(($count3 > 0 || get_option('2mb_autocode_tophome') == 0) && !is_single()) {
         $top = 0;
     }
     if($count5 > 0 && is_single()){
@@ -63,16 +70,10 @@ function twomb_autocode_modify_content($content) {
     if($count2 > 0) {
         $bottom = 0;
     }
-    if(($count4 > 0 && !is_single()) || get_option('2mb_autocode_tophome') == 0) {
+    if(($count4 > 0 || get_option('2mb_autocode_tophome') == 0) && !is_single()) {
         $bottom = 0;
     }
     if($count6 > 0 && is_single()){
-        $bottom = 0;
-    }
-    if($count7 > 0) {
-        $top = 0;
-    }
-    if($count8 > 0) {
         $bottom = 0;
     }
     if($count9 > 0 && !is_single()) {
@@ -80,6 +81,53 @@ function twomb_autocode_modify_content($content) {
     }
     if($count10  > 0 && !is_single()) {
         $bottom = 1;
+    }
+    global $post;
+    $tophome_force = get_post_meta($post->ID, '2mb_autocode_tophome_force', true);
+    $bottomhome_force = get_post_meta($post->ID, '2mb_autocode_bottomhome_force', true);
+    $top_force = get_post_meta($post->ID, '2mb_autocode_top_force', true);
+    $bottom_force = get_post_meta($post->ID, '2mb_autocode_bottom_force', true);
+    if($tophome_force == '') {
+        $tophome_force = 0;
+    }
+    if($bottomhome_force == '') {
+        $bottomhome_force = 0;
+    }
+    if($top_force == '') {
+        $top_force = 0;
+    }
+    if($bottom_force == '') {
+        $bottom_force = 0;
+    }
+    if($tophome_force == 1 && !is_single()) {
+        $top = 1;
+    }
+    else if($tophome_force == 2 && !is_single()) {
+        $top = 0;
+    }
+    if($bottomhome_force == 1 && !is_single()) {
+        $bottom = 1;
+    }
+    else if($bottomhome_force == 2 && !is_single()) {
+        $bottom = 0;
+    }
+    if($top_force == 1 && is_single()) {
+        $top = 1;
+    }
+    else if($top_force == 2 && is_single()) {
+        $top = 0;
+    }
+    if($bottom_force == 1 && is_single()) {
+        $bottom = 1;
+    }
+    if($bottom_force == 2 && is_single()) {
+        $bottom = 0;
+    }
+    if($count7 > 0) {
+        $top = 0;
+    }
+    if($count8 > 0) {
+        $bottom = 0;
     }
     if($top == 1) {
         if(get_option('2mb_autocode_toptype') == 1) {
@@ -129,7 +177,6 @@ function twomb_autocode_exec_php($matches) {
 }
 
 add_action('admin_menu', 'twomb_autocode_init_admin_menu');
-
 function twomb_autocode_init_admin_menu() {
     add_options_page('Autocode Options', 'Autocode', 'manage_options', 'twomb-autocode-settings', 'twomb_autocode_options');
 }
@@ -181,7 +228,6 @@ function twomb_autocode_options() {
 }
 
 add_action('admin_init', 'twomb_autocode_init_settings');
-
 function twomb_autocode_init_settings() {
     add_settings_section('twomb-autocode-settings', 'Autocode Options', 'twomb_autocode_print_section', 'twomb-autocode-settings');
     register_setting('twomb-autocode-settings', '2mb_autocode_topstring', 'twomb_autocode_topstring_sanitize');
@@ -314,6 +360,121 @@ function twomb_autocode_print_section() {
     Enter your settings below, then click save to save your changes.
     </p>
     <?php
+}
+
+add_action('add_meta_boxes', 'twomb_autocode_add_meta_box');
+function twomb_autocode_add_meta_box() {
+    add_meta_box('2mb_autocode_options', 'Autocode Options', 'twomb_autocode_post_options', 'post');
+}
+
+function twomb_autocode_post_options ($post) {
+    wp_nonce_field( 'twomb_autocode_save_meta_box_data', 'twomb_autocode_meta_box_nonce' );
+    $value = get_post_meta($post->ID, '2mb_autocode_tophome_force', true);
+    if($value == '') {
+        $value = 0;
+    }
+    ?>
+<p>
+Should the top text be prepended to that on the home page? Note: The first option means that it will not be set specifically on this post, it will simply follow what is set in the options page. The other options will change the option only for this post.
+<br>
+<input type="radio" name="2mb_autocode_tophome_force" value="0"<?php echo(($value == 0)?' checked="checked">':'>'); ?> Do what is set in the autocode settings.
+<br>
+<input type="radio" name="2mb_autocode_tophome_force" value="1"<?php echo(($value == 1)?' checked="checked">':'>'); ?> Force the top text to appear on this post for the home page.
+<br>
+<input type="radio" name="2mb_autocode_tophome_force" value="2"<?php echo(($value == 2)?' checked="checked">':'>'); ?> Force the top text to not show on the home page for this post.
+</p>
+<?php
+    $value = get_post_meta($post->ID, '2mb_autocode_bottomhome_force', true);
+    if($value == '') {
+        $value = 0;
+    }
+    ?>
+<p>
+Should the bottom text be appended to that on the home page? Note: The first option means that it will not be set specifically on this post, it will simply follow what is set in the options page. The other options will change the option only for this post.
+<br>
+<input type="radio" name="2mb_autocode_bottomhome_force" value="0"<?php echo(($value == 0)?' checked="checked">':'>'); ?> Do what is set in the autocode settings.
+<br>
+<input type="radio" name="2mb_autocode_bottomhome_force" value="1"<?php echo(($value == 1)?' checked="checked">':'>'); ?> Force the bottom text to appear on this post for the home page.
+<br>
+<input type="radio" name="2mb_autocode_bottomhome_force" value="2"<?php echo(($value == 2)?' checked="checked">':'>'); ?> Force the bottom text to not show on the home page for this post.
+</p>
+<?php
+    $value = get_post_meta($post->ID, '2mb_autocode_top_force', true);
+    if($value == '') {
+        $value = 0;
+    }
+    ?>
+<p>
+Should the top text be prepended to this post? Note: The first option means that it will not be set specifically on this post, it will simply follow what is set in the options page. The other options will change the option only for this post.
+<br>
+<input type="radio" name="2mb_autocode_top_force" value="0"<?php echo(($value == 0)?' checked="checked">':'>'); ?> Do what is set in the autocode settings.
+<br>
+<input type="radio" name="2mb_autocode_top_force" value="1"<?php echo(($value == 1)?' checked="checked">':'>'); ?> Force the top text to appear on this post.
+<br>
+<input type="radio" name="2mb_autocode_top_force" value="2"<?php echo(($value == 2)?' checked="checked">':'>'); ?> Force the top text to not show on this post.
+</p>
+<?php
+    $value = get_post_meta($post->ID, '2mb_autocode_bottom_force', true);
+    if($value == '') {
+        $value = 0;
+    }
+    ?>
+<p>
+Should the bottom text be appended to this post? Note: The first option means that it will not be set specifically on this post, it will simply follow what is set in the options page. The other options will change the option only for this post.
+<br>
+<input type="radio" name="2mb_autocode_bottom_force" value="0"<?php echo(($value == 0)?' checked="checked">':'>'); ?> Do what is set in the autocode settings.
+<br>
+<input type="radio" name="2mb_autocode_bottom_force" value="1"<?php echo(($value == 1)?' checked="checked">':'>'); ?> Force the bottom text to appear on this post.
+<br>
+<input type="radio" name="2mb_autocode_bottom_force" value="2"<?php echo(($value == 2)?' checked="checked">':'>'); ?> Force the bottom text to not show on this post.
+</p>
+<?php
+}
+
+add_action( 'save_post', 'twomb_autocode_save_meta_box_data' );
+function twomb_autocode_save_meta_box_data( $post_id ) {
+    if ( !isset( $_POST['twomb_autocode_meta_box_nonce'] ) ) {
+        return;
+    }
+    if ( !wp_verify_nonce( $_POST['twomb_autocode_meta_box_nonce'], 'twomb_autocode_save_meta_box_data' ) ) {
+        return;
+    }
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        return;
+    }
+    if ( isset( $_POST['post_type'] ) && 'page' == $_POST['post_type'] ) {
+        if ( !current_user_can( 'edit_page', $post_id ) ) {
+            return;
+        }
+    }
+    else {
+        if ( !current_user_can( 'edit_post', $post_id ) ) {
+            return;
+        }
+    }
+    if(!isset($_POST['2mb_autocode_tophome_force']) || !isset($_POST['2mb_autocode_bottomhome_force']) || !isset($_POST['2mb_autocode_top_force']) || !isset($_POST['2mb_autocode_bottom_force'])) {
+        return;
+    }
+    $tophome = (int)$_POST['2mb_autocode_tophome_force'];
+    $bottomhome = (int)$_POST['2mb_autocode_bottomhome_force'];
+    $top = (int)$_POST['2mb_autocode_top_force'];
+    $bottom = (int)$_POST['2mb_autocode_bottom_force'];
+    if($tophome < 0 || $tophome > 2) {
+        $tophome = 0;
+    }
+    if($bottomhome < 0 || $bottomhome > 2) {
+        $bottomhome = 0;
+    }
+    if($top < 0 || $top > 2) {
+        $top = 0;
+    }
+    if($bottom < 0 || $bottom > 2) {
+        $bottom = 0;
+    }
+    update_post_meta($post_id, '2mb_autocode_tophome_force', $tophome);
+    update_post_meta($post_id, '2mb_autocode_bottomhome_force', $bottomhome);
+    update_post_meta($post_id, '2mb_autocode_top_force', $top);
+    update_post_meta($post_id, '2mb_autocode_bottom_force', $bottom);
 }
 
 ?>

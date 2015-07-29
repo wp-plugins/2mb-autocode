@@ -2,9 +2,9 @@
 Contributors: lilmike, stormdragon2976
 Donate link: http://2mb.solutions/donate
 Tags: autocode, code placement, automatic, php, html, preformatted text, top, bottom, modify posts
-Requires at least: 2.7.0
-Tested up to: 4.1
-Stable tag: 1.1.2
+Requires at least: 3.0
+Tested up to: 4.2.3
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,6 +15,8 @@ This plugin allows you to place predetermined text/html/php at the top or bottom
 This plugin, developed by [2MB Solutions](http://2mb.solutions/), allows you to place predetermined text/html/php at the top and/or bottom of each post. In addition, you can override the placing of text at the bottom and/or top of a specific post, override the placing of text on the homepage or on a post individually, or run arbitrary php inside a post.
 
 For more on 2MB, please visit (http://2mb.solutions/).
+
+Note that all development now takes place at [github](http://github.com/2mb-solutions/autocode/).
 
 == Installation ==
 
@@ -33,6 +35,8 @@ Feel free to mess around with the settings under settings > Autocode.
 
 = How do I remove the text from a specific post! HELP! =
 
+There are now options on each post's edit page to force remove, force add, or do neither to the text on the top and bottom of either home or post pages. The text below is still valid, however the settings just mentioned will override the tags below if set to anything except do nothing.
+
 Simply put ##no_top## or ##no_bottom## anywhere in the post, and it will remove those tags, and not put the text on bottom or top depending on which tag(s) you entered. In addition, if you put ##no_top_home##, ##no_bottom_home##, ##no_top_post##, or ##no_bottom_post##, it will remove the text from either the top or bottom of either the post page or the homepage, no matter what is set in the settings.
 
 = How do I suggest a feature or new plugin? =
@@ -49,6 +53,8 @@ For example, to echo hello world in the middle of a post, do the following:
 
 = How do I make the text go on the homepage without setting the checkbox! =
 
+There is now an options panel on each post, so you can force text on the home page, force text to not be on the homepage, or defer to the main settings. The text below is still valid, but when set to anything except do nothing, the options on the post editor will override these tags.
+
 Simply put  ##do_top_home## or ##do_bottom_home## anywhere in the post.
 
 = My blog is broken and just shows the white screen of death after upgrading to 1.1 or 1.1.1! help! =
@@ -59,11 +65,24 @@ Do not worry, the fix is a simple one:
 1. Now upgrade to 2mb autocode version 1.1.2, which fixes this particular issue.
 1. Optional but highly recommended: Replace all [exec] or <exec> tags with [php] tags to allow 2mb autocode to do the php for you, and you will have no need for inline php.
 
+= Why isn't any development taking place at wordpress.org? =
+
+We have now moved our official development version to [github](http://github.com/2mb-solutions/autocode/). Feel free to test the code if you wish, and/or open issues over there although any issues or problems reported on the wordpress.org forums will also be dealt with.
+
 == Screenshots ==
 
 No screen shots at the moment. Sorry!
 
 == Changelog ==
+
+= 1.2.1 =
+
+*Fixed a bug allowing post data to echo twice if using ##do_top## or ##do_bottom##.
+
+= 1.2 =
+
+*Added an options panel on the post editor so you can now set custom post overrides without having to insert tags such as ##do_post_home##.
+*Fixed a nasty bug in which text on each post's single page was suppressed when the home checkbox was unchecked. Whoops?
 
 = 1.1.2 =
 *Very important! If you were using inline php to put php on your blog before, please upgrade to this version or uninstall inline php before upgrading to 2mb autocode 1.1. There was a problem that caused the two plugins to conflict, which has now been solved. *** NOTE *** if your blog is not accessible due to the conflict, do the following: Delete the inline php folder from your server, and all should be well. We're sorry for any inconvenience -- sometimes even plugin developers can screw up ;-).
@@ -89,6 +108,14 @@ No screen shots at the moment. Sorry!
 *First release. woohoo!
 
 == Upgrade Notice ==
+
+= 1.2.1 =
+
+This is a bug fix release. If you use ##do_top## or ##do_bottom##, this is for you.
+
+= 1.2 =
+
+You can now override text placement on a per-post basis in the editor, instead of having to use special tags. Also if your text was not showing on each post when the home checkbox was unchecked, this fixes that issue.
 
 = 1.1.2 =
 If you use inline php to do your php inside posts:
