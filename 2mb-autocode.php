@@ -76,12 +76,6 @@ function twomb_autocode_modify_content($content) {
     if($count6 > 0 && is_single()){
         $bottom = 0;
     }
-    if($count7 > 0) {
-        $top = 0;
-    }
-    if($count8 > 0) {
-        $bottom = 0;
-    }
     if($count9 > 0 && !is_single()) {
         $top = 1;
     }
@@ -127,6 +121,12 @@ function twomb_autocode_modify_content($content) {
         $bottom = 1;
     }
     if($bottom_force == 2 && is_single()) {
+        $bottom = 0;
+    }
+    if($count7 > 0) {
+        $top = 0;
+    }
+    if($count8 > 0) {
         $bottom = 0;
     }
     if($top == 1) {

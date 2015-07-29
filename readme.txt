@@ -2,9 +2,9 @@
 Contributors: lilmike, stormdragon2976
 Donate link: http://2mb.solutions/donate
 Tags: autocode, code placement, automatic, php, html, preformatted text, top, bottom, modify posts
-Requires at least: 2.7.0
+Requires at least: 3.0
 Tested up to: 4.2.3
-Stable tag: 1.2
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,10 @@ No screen shots at the moment. Sorry!
 
 == Changelog ==
 
+= 1.2.1 =
+
+*Fixed a bug allowing post data to echo twice if using ##do_top## or ##do_bottom##.
+
 = 1.2 =
 
 *Added an options panel on the post editor so you can now set custom post overrides without having to insert tags such as ##do_post_home##.
@@ -104,6 +108,10 @@ No screen shots at the moment. Sorry!
 *First release. woohoo!
 
 == Upgrade Notice ==
+
+= 1.2.1 =
+
+This is a bug fix release. If you use ##do_top## or ##do_bottom##, this is for you.
 
 = 1.2 =
 
